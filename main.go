@@ -26,8 +26,8 @@ func main() {
 		panic(err)
 	}
 	defer res.Body.Close()
+
 	t := table.NewWriter()
-	t.SetStyle(table.StyleColoredBright)
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Symbol", "Price", "1h", "24h"})
 	for symbol, v := range data["data"].(map[string]interface{}) {
@@ -40,12 +40,11 @@ func main() {
 					percent_change_1h := quote["percent_change_1h"].(float64)
 					percent_change_24h := quote["percent_change_24h"].(float64)
 					t.AppendRows([]table.Row{
-						{symbol, fmt.Sprintf("%f", price), fmt.Sprintf("%f", percent_change_1h), fmt.Sprintf("%f", percent_change_24h)},
+						{symbol, fmt.Sprintf("%.2f", price), fmt.Sprintf("%.2f", percent_change_1h), fmt.Sprintf("%.2f", percent_change_24h)},
 					})
 				}
 			}
 		}
 	}
 	t.Render()
-	t.RenderMarkdown()
 }
