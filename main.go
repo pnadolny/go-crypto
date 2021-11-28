@@ -27,23 +27,25 @@ func main() {
 	}
 	defer res.Body.Close()
 	t := table.NewWriter()
+	t.SetStyle(table.StyleColoredBright)
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Symbol", "Price"})
+	t.AppendHeader(table.Row{"Symbol", "Price", "1h", "24h"})
 	for symbol, v := range data["data"].(map[string]interface{}) {
 		for kk, vv := range v.(map[string]interface{}) {
-			var price float64
 			if vv != nil {
 				switch kk {
 				case "quote":
 					quote := vv.(map[string]interface{})["USD"].(map[string]interface{})
-					price = quote["price"].(float64)
+					price := quote["price"].(float64)
+					percent_change_1h := quote["percent_change_1h"].(float64)
+					percent_change_24h := quote["percent_change_24h"].(float64)
 					t.AppendRows([]table.Row{
-						{symbol, fmt.Sprintf("%f", price)},
+						{symbol, fmt.Sprintf("%f", price), fmt.Sprintf("%f", percent_change_1h), fmt.Sprintf("%f", percent_change_24h)},
 					})
-					t.AppendSeparator()
 				}
 			}
 		}
 	}
 	t.Render()
+	t.RenderMarkdown()
 }
